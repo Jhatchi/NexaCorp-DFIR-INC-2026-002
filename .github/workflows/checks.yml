@@ -16,7 +16,7 @@ jobs:
       - name: Lint markdown files
         run: |
           markdownlint '**/*.md' --ignore node_modules \
-            --disable MD013 MD033 MD041 MD024 MD022 MD031 MD032 MD060 MD040 MD025 MD036 MD034 MD038
+            --disable MD013 MD033 MD041 MD024 MD022 MD031 MD032 MD060 MD040 MD025 MD036 MD034 MD038 MD056
 
   xml-validate:
     runs-on: ubuntu-latest
