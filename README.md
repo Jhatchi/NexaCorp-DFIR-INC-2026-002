@@ -15,7 +15,7 @@ Forensic investigation of a coordinated Linux post-exploitation campaign against
 
 All IP addresses, hostnames, account names, and indicators of compromise published in this report (`10.10.10.42`, `192.168.100.199`, `bru-app-01`, `tgt-blue11`, `svc_api`, `it_support`, Tor exit-node ranges quoted as IOCs, etc.) are **lab-local artifacts**, not real-world threat intelligence. Do not feed them to a production SIEM as IOCs. The Tor exit nodes referenced are public infrastructure used in the storytelling and not associated with any real campaign.
 
-**Publication authorized** by BeCode lab coach (Thomas Bataboudila) on 2026-05-17. The full Confidentiality Statement appears in the findings report.
+**Publication authorized** by BeCode lab coach (Thomas B.) on 2026-05-17. The full Confidentiality Statement appears in the findings report.
 
 ## At a glance
 
@@ -316,7 +316,7 @@ The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report t
 
 ## Acknowledgments
 
-- **Thomas Bataboudila** (BeCode lab coach): scenario design, evidence bundle preparation, publication authorization for portfolio use (2026-05-17).
+- **Thomas B.** (BeCode lab coach): scenario design, evidence bundle preparation, publication authorization for portfolio use (2026-05-17).
 - **MITRE** for the Caldera framework that powered Phase 2 adversary emulation, and for the ATT&CK knowledge base used to map every finding.
 - **Wazuh project** for the open-source SIEM that ingested the audit telemetry and ran the deployed ruleset.
 

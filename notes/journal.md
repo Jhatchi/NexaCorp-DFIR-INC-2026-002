@@ -310,7 +310,7 @@ See `detection/workflow.md` for per-rule rationale, deployment commands, and val
 
 ## 11. Operational Notes (BeCode internal)
 
-- Coach **Thomas Bataboudila** (BeCode lab coach) confirmed portfolio publication authorization for INC-2026-002 on 2026-05-17, same authorization as for INC-2026-001.
+- Coach **Thomas B.** (BeCode lab coach) confirmed portfolio publication authorization for INC-2026-002 on 2026-05-17, same authorization as for INC-2026-001.
 - The PDF report v1 was generated on 2026-05-27 at 18:00 local. An audit pass at 19:07 the same day identified four micro-bugs (two section references, one carryover term from INC-2026-001, one timezone typo). PDF v2 corrects all four without regression and is the canonical deliverable in `reports/`.
 - The markdown source `INC-2026-002_Findings_Report.md` in this repository corresponds to the same content as PDF v2.
 - Lab harness command: `lab attack` initiates the Caldera operation against the learner's assigned target. Operation duration ~5.5 minutes. Wazuh alerts start appearing within 60 seconds of trigger.
