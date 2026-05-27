@@ -10,7 +10,7 @@ jobs:
   markdown:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install markdownlint-cli
         run: npm install -g markdownlint-cli
       - name: Lint markdown files
@@ -21,7 +21,7 @@ jobs:
   xml-validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install xmllint
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils
       - name: Validate Wazuh rule XML
@@ -35,7 +35,7 @@ jobs:
   typography:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Enforce zero em-dash and en-dash
         run: |
           if grep -rPn "[\x{2013}\x{2014}]" \
