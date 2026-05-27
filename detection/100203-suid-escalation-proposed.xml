@@ -1,0 +1,34 @@
+<!--
+  Wazuh rule 100203 : SUID privilege escalation detection.
+
+  STATUS    : PROPOSED (Phase 3 candidate, not deployed in lab BCC-2026
+              INC-2026-002 run)
+  RATIONALE : Closes Phase 1 Task 3 detection gap. The audit.log captured
+              55 events tagged key="suid_escalation" showing the classic
+              uid=1000 / euid=0 divergence pattern during the SUID find
+              exploitation, but no Wazuh rule fired on any of them. This
+              rule design closes that gap.
+  WHY NOT DEPLOYED : MITRE Caldera operates as a systemd service starting at
+              root (uid=0, euid=0, auid=4294967295), which means the
+              lab2-linux-privesc adversary profile skips the upstream
+              escalation phase entirely. Validating this rule against live
+              attack telemetry would require Atomic Red Team or a manual
+              SSH replay to exercise the privesc step. Promoting from
+              proposed to deployed is a follow-up item.
+  DETECTION SIGNATURE : uid != 0 AND euid == 0 is the exact pattern of a
+              non-root user obtaining root privileges through a SUID binary,
+              regardless of the specific binary abused. This makes the rule
+              generic across the GTFOBins technique catalogue.
+  MITRE     : T1548.001 (Abuse Elevation Control Mechanism : Setuid and Setgid)
+-->
+<rule id="100203" level="12">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">^suid_escalation$</field>
+    <field name="audit.uid" negate="yes">^0$</field>
+    <field name="audit.euid">^0$</field>
+    <description>Lab2: SUID privilege escalation detected (uid=$(audit.uid), euid=0) (T1548.001)</description>
+    <mitre>
+        <id>T1548.001</id>
+    </mitre>
+    <group>lab2,linux,privesc,</group>
+</rule>

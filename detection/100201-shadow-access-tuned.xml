@@ -1,0 +1,27 @@
+<!--
+  Wazuh rule 100201 : /etc/shadow access detection, tuned.
+
+  STATUS    : DEPLOYED (BCC-2026 / INC-2026-002 lab run, validated against
+              live Caldera lab2-linux-privesc adversary profile on 2026-05-27)
+  CLOSES    : Finding I4 (Phase 1 section 5.4.1, Task 4A) detection precision
+              gap. The pre-tuning rule fired on benign Wazuh self-monitoring
+              and cron user-cache rebuild events, generating noise that masked
+              the real attack signal.
+  RATIONALE : Negate the executable paths of two known legitimate accessors :
+              Wazuh modulesd (FIM probe) and the cron daemon. Caldera real
+              attack pattern (command="head", exe="/usr/bin/head", proctitle
+              "head -5 /etc/shadow") still matches because /usr/bin/head is
+              outside the negated set.
+  MITRE     : T1003.008 (OS Credential Dumping : /etc/passwd and /etc/shadow)
+-->
+<rule id="100201" level="12" overwrite="yes">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">^shadow_access$</field>
+    <field name="audit.exe" negate="yes">^/var/ossec/bin/</field>
+    <field name="audit.exe" negate="yes">^/usr/sbin/cron$</field>
+    <description>Lab2: /etc/shadow accessed - credential dump attempt (T1003.008)</description>
+    <mitre>
+        <id>T1003.008</id>
+    </mitre>
+    <group>lab2,linux,privesc,</group>
+</rule>

@@ -1,0 +1,32 @@
+<!--
+  Wazuh rule 100205 : Cron persistence detection.
+
+  STATUS    : DEPLOYED (BCC-2026 / INC-2026-002 lab run, validated against
+              live Caldera lab2-linux-privesc adversary profile on 2026-05-27)
+  CLOSES    : Finding I7 (Phase 1 section 5.4.4, Task 4D) complete blind spot.
+              No pre-existing Wazuh rule monitored /etc/cron.d/ file creation,
+              leaving the persistence install (/etc/cron.d/svc-updater observed
+              in metadata + confirmed by Phase 2 system inspection) entirely
+              undetected.
+  PREREQUISITE : Requires auditd watches on the agent (see auditd-config.conf
+              in this directory). Without those watches, no events tagged
+              key="cron_persistence" reach the manager and this rule never
+              fires.
+  RATIONALE : Match on the auditd key "cron_persistence" while negating
+              writes performed by the standard "/usr/bin/crontab" utility,
+              so legitimate users editing their own crontab via the standard
+              tool do not generate alerts. Any direct file write to
+              /etc/cron.d/ (the exact technique used in INC-2026-002) bypasses
+              /usr/bin/crontab and triggers the level 12 alert.
+  MITRE     : T1053.003 (Scheduled Task/Job : Cron)
+-->
+<rule id="100205" level="12">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">^cron_persistence$</field>
+    <field name="audit.exe" negate="yes">^/usr/bin/crontab$</field>
+    <description>Lab2: Cron persistence file modified - scheduled task backdoor (T1053.003)</description>
+    <mitre>
+        <id>T1053.003</id>
+    </mitre>
+    <group>lab2,linux,persistence,</group>
+</rule>

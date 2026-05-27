@@ -1,0 +1,27 @@
+<!--
+  Wazuh rule 100202 : useradd execution, tuned.
+
+  STATUS    : DEPLOYED (BCC-2026 / INC-2026-002 lab run, validated against
+              live Caldera lab2-linux-privesc adversary profile on 2026-05-27)
+  CLOSES    : Finding I5 (Phase 1 section 5.4.2, Task 4B) false positive.
+              The pre-tuning rule fired on any useradd invocation, including
+              the read-only "useradd -D" call performed by Wazuh syscollector
+              at agent startup, generating a noise alert.
+  RATIONALE : Require that the first execve argument is not "-D" (the flag
+              that puts useradd in read-only default-display mode). Real
+              backdoor creation patterns (e.g. "useradd -m -s /bin/bash
+              bk_nexacorp" observed in Caldera, or the it_support useradd
+              from the actual Phase 1 attack) all carry a real username
+              argument and continue to match.
+  MITRE     : T1136.001 (Create Account : Local Account)
+-->
+<rule id="100202" level="10" overwrite="yes">
+    <if_sid>80700</if_sid>
+    <field name="audit.command">^useradd$</field>
+    <field name="audit.execve.a1" negate="yes">^-D$</field>
+    <description>Lab2: useradd executed - backdoor account creation (T1136.001)</description>
+    <mitre>
+        <id>T1136.001</id>
+    </mitre>
+    <group>lab2,linux,privesc,</group>
+</rule>

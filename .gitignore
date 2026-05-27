@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node (CI tooling)
+node_modules/
+
+# Working notes / scratch (kept local, not for publication)
+raw/
+notes/scratch/
+scratch/
+*.draft.md
