@@ -24,9 +24,9 @@ The result is **four rules**, listed below in deployment order. See the inline X
 
 **What it does.** Fires a level 12 alert when an audit event tagged `key="shadow_access"` is observed, provided the calling executable is not Wazuh modulesd or the cron daemon.
 
-**Why it exists.** The pre-tuning version of `100201` fired on any process touching `/etc/shadow`, which produced two recurring benign signals : Wazuh's File Integrity Monitoring probe at agent startup (`exe="/var/ossec/bin/wazuh-modulesd"`, syscall 89 readlink, returns -22 EINVAL because `/etc/shadow` is not a symlink) and the cron daemon's periodic user-cache rebuild (`exe="/usr/sbin/cron"`, fires every 10 minutes). These two patterns alone generated dozens of noise alerts during the 30-minute Phase 2 monitoring window, which would drown a real `/etc/shadow` access in routine inventory chatter in a production SOC.
+**Why it exists.** The pre-tuning version of `100201` fired on any process touching `/etc/shadow`, which produced two recurring benign signals: Wazuh's File Integrity Monitoring probe at agent startup (`exe="/var/ossec/bin/wazuh-modulesd"`, syscall 89 readlink, returns -22 EINVAL because `/etc/shadow` is not a symlink) and the cron daemon's periodic user-cache rebuild (`exe="/usr/sbin/cron"`, fires every 10 minutes). These two patterns alone generated dozens of noise alerts during the 30-minute Phase 2 monitoring window, which would drown a real `/etc/shadow` access in routine inventory chatter in a production SOC.
 
-**Impact.** The tuned rule suppresses both noise classes by negating the executable paths, while preserving detection of the real attack pattern observed during Caldera : `command="head"`, `exe="/usr/bin/head"`, proctitle `head -5 /etc/shadow`, with `auid=4294967295` and `uid=0, euid=0`. Phase 1 finding I4 (5.4.1) documented 27 direct `cat /etc/shadow` invocations during the real attack, plus 27 additional invocations wrapped in `bash -c` with `head -3` piping; all of these continue to match the tuned rule because their `exe` is outside the negated set.
+**Impact.** The tuned rule suppresses both noise classes by negating the executable paths, while preserving detection of the real attack pattern observed during Caldera: `command="head"`, `exe="/usr/bin/head"`, proctitle `head -5 /etc/shadow`, with `auid=4294967295` and `uid=0, euid=0`. Phase 1 finding I4 (5.4.1) documented 27 direct `cat /etc/shadow` invocations during the real attack, plus 27 additional invocations wrapped in `bash -c` with `head -3` piping; all of these continue to match the tuned rule because their `exe` is outside the negated set.
 
 **Mapping to Phase 1 finding I4 :** the real attacker performed a credential dump that this rule would have caught had the tuning been in place at the time. The lack of pre-tuning is exactly the SOC posture deficiency that this engagement is meant to address.
 
@@ -44,7 +44,7 @@ The result is **four rules**, listed below in deployment order. See the inline X
 
 **What it does.** Fires a level 12 alert when an audit event tagged `key="cron_persistence"` is observed, provided the calling executable is not the standard `/usr/bin/crontab` utility.
 
-**Why it exists.** Phase 1 finding I7 (5.4.4, Task 4D) identified `/etc/cron.d/svc-updater` as the persistence mechanism installed by the attacker after gaining root. The pre-existing Wazuh ruleset had no rule monitoring `/etc/cron.d/` or any of the other standard cron directories, which made this entire Task 4D class a complete blind spot. The Phase 2 Caldera run confirmed the gap : the simulation also installs a cron file and no Wazuh alert fired on it.
+**Why it exists.** Phase 1 finding I7 (5.4.4, Task 4D) identified `/etc/cron.d/svc-updater` as the persistence mechanism installed by the attacker after gaining root. The pre-existing Wazuh ruleset had no rule monitoring `/etc/cron.d/` or any of the other standard cron directories, which made this entire Task 4D class a complete blind spot. The Phase 2 Caldera run confirmed the gap: the simulation also installs a cron file and no Wazuh alert fired on it.
 
 **Impact.** This new rule, paired with the auditd watches in `auditd-config.conf`, raises a level 12 alert on any file write to `/etc/cron.d/`, `/etc/crontab`, or `/var/spool/cron/` performed by anything other than the standard `crontab` utility. Legitimate user crontab edits via `crontab -e` bypass the alert. Any direct file write to `/etc/cron.d/` (the technique used by both the real attacker and the Caldera emulation) triggers the alert.
 
@@ -62,7 +62,7 @@ The result is **four rules**, listed below in deployment order. See the inline X
 
 **Promotion path.** Atomic Red Team techniques `T1548.001` and `T1548.001a` perform actual SUID exploitation under a non-root user, which would generate audit events matching the proposed rule. A manual SSH replay (log in as a low-privilege user, then invoke a SUID-misconfigured binary) achieves the same. Either method would let the rule move from proposed to deployed-and-validated.
 
-**Why ship it as proposed rather than omit.** The Phase 1 detection gap is real : 55 audit events tagged for SUID escalation existed in the evidence and no Wazuh rule fired. Shipping the rule as a proposed artifact lets a recruiter or SOC engineer evaluate the design even though the lab architecture prevented live validation. Treating the design honestly (proposed, not deployed) is more useful than either omitting the rule or claiming validation that did not happen.
+**Why ship it as proposed rather than omit.** The Phase 1 detection gap is real: 55 audit events tagged for SUID escalation existed in the evidence and no Wazuh rule fired. Shipping the rule as a proposed artifact lets a recruiter or SOC engineer evaluate the design even though the lab architecture prevented live validation. Treating the design honestly (proposed, not deployed) is more useful than either omitting the rule or claiming validation that did not happen.
 
 **Mapping to Phase 1 finding I3 :** this rule closes the Task 3 detection gap once promoted to deployed.
 
@@ -79,7 +79,7 @@ The 30-minute Phase 2 monitoring window exposed five benign events generated by 
 
 ## Imprecise detection note (rule 100204)
 
-The pre-existing rule `100204` (SSH key directory monitoring) fired 9 times during Phase 2, all on the attacker's SUID enumeration sweep `find / -perm -4000 -type f`. The rule fires because this `find` invocation traverses `.ssh` directories during its filesystem walk, not because the attacker is targeting SSH keys. The detection is imprecise : it catches the activity but mischaracterizes it. A focused rule on `find /home -name id_rsa` or `find . -name authorized_keys` would be more precise. Tuning `100204` and adding a precise SSH-key-harvest rule are documented as follow-up items in the report's Phase 2 conclusion (section 9.5).
+The pre-existing rule `100204` (SSH key directory monitoring) fired 9 times during Phase 2, all on the attacker's SUID enumeration sweep `find / -perm -4000 -type f`. The rule fires because this `find` invocation traverses `.ssh` directories during its filesystem walk, not because the attacker is targeting SSH keys. The detection is imprecise: it catches the activity but mischaracterizes it. A focused rule on `find /home -name id_rsa` or `find . -name authorized_keys` would be more precise. Tuning `100204` and adding a precise SSH-key-harvest rule are documented as follow-up items in the report's Phase 2 conclusion (section 9.5).
 
 ## Deployment workflow
 
@@ -132,16 +132,16 @@ For end-to-end attack-chain validation, the `lab attack` harness (Caldera-driven
 | I3 SUID find privilege escalation | 5.3 | CRITICAL | Rule 100203 proposed (not deployed in this lab, see rationale above) |
 | I4 /etc/shadow credential dump | 5.4.1 | CRITICAL | Rule 100201 deployed (tuned) |
 | I5 it_support backdoor user | 5.4.2 | HIGH | Rule 100202 deployed (tuned) |
-| I6 SSH key harvest | 5.4.3 | MEDIUM | Detected imprecisely by 100204 (follow-up : tune 100204 + add precise key-harvest rule) |
+| I6 SSH key harvest | 5.4.3 | MEDIUM | Detected imprecisely by 100204 (follow-up: tune 100204 + add precise key-harvest rule) |
 | I7 Cron persistence | 5.4.4 | HIGH | Rule 100205 deployed (new), auditd-config.conf prerequisite |
 
 ## References
 
-- Wazuh custom rules documentation : https://documentation.wazuh.com/current/user-manual/ruleset/custom.html
-- Wazuh rule syntax reference : https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-syntax.html
-- Linux audit daemon (`auditd`) rule syntax : `auditctl(8)` manual page
+- Wazuh custom rules documentation: https://documentation.wazuh.com/current/user-manual/ruleset/custom.html
+- Wazuh rule syntax reference: https://documentation.wazuh.com/current/user-manual/ruleset/rules/rules-syntax.html
+- Linux audit daemon (`auditd`) rule syntax: `auditctl(8)` manual page
 - MITRE ATT&CK Enterprise techniques referenced :
-  - [T1003.008 OS Credential Dumping : /etc/passwd and /etc/shadow](https://attack.mitre.org/techniques/T1003/008/)
-  - [T1136.001 Create Account : Local Account](https://attack.mitre.org/techniques/T1136/001/)
-  - [T1053.003 Scheduled Task/Job : Cron](https://attack.mitre.org/techniques/T1053/003/)
-  - [T1548.001 Abuse Elevation Control Mechanism : Setuid and Setgid](https://attack.mitre.org/techniques/T1548/001/)
+  - [T1003.008 OS Credential Dumping: /etc/passwd and /etc/shadow](https://attack.mitre.org/techniques/T1003/008/)
+  - [T1136.001 Create Account: Local Account](https://attack.mitre.org/techniques/T1136/001/)
+  - [T1053.003 Scheduled Task/Job: Cron](https://attack.mitre.org/techniques/T1053/003/)
+  - [T1548.001 Abuse Elevation Control Mechanism: Setuid and Setgid](https://attack.mitre.org/techniques/T1548/001/)

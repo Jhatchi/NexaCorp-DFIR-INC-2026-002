@@ -30,8 +30,8 @@
 
 ### 1.2 Incident anchor timestamp
 
-- Privilege escalation moment (per `INCIDENT_METADATA.txt`) : 2026-05-16 19:43:01 local Brussels time (CEST, UTC+02:00)
-- Timezone caveat : the metadata file asserts UTC, but cross-correlation with `auth.log` proves the metadata timestamps are in fact local Brussels time. All timestamps in this journal and the final report are normalized to local time.
+- Privilege escalation moment (per `INCIDENT_METADATA.txt`): 2026-05-16 19:43:01 local Brussels time (CEST, UTC+02:00)
+- Timezone caveat: the metadata file asserts UTC, but cross-correlation with `auth.log` proves the metadata timestamps are in fact local Brussels time. All timestamps in this journal and the final report are normalized to local time.
 
 ### 1.3 Lab infrastructure (Phase 2)
 
@@ -56,10 +56,10 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 
 ### 2.2 Reported window
 
-- Attack reference timestamp (escalation) : 2026-05-16 19:43:01 local
-- Reconnaissance phase observed in `auth.log` : 2026-05-16 17:45:14 to 19:41:06 local
-- Initial access observed in `auth.log` : 2026-05-16 17:43:43 local (predates the failed-attempt window, which is the key signal that the failures are a diversion)
-- Last visible attacker activity in `audit.log` : 2026-05-16 23:41:54 local (end of audit.log coverage)
+- Attack reference timestamp (escalation): 2026-05-16 19:43:01 local
+- Reconnaissance phase observed in `auth.log`: 2026-05-16 17:45:14 to 19:41:06 local
+- Initial access observed in `auth.log`: 2026-05-16 17:43:43 local (predates the failed-attempt window, which is the key signal that the failures are a diversion)
+- Last visible attacker activity in `audit.log`: 2026-05-16 23:41:54 local (end of audit.log coverage)
 
 ---
 
@@ -70,14 +70,14 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 | File | Purpose |
 |---|---|
 | `auth.log` | SSH authentication events, PAM, useradd. Full incident window. |
-| `audit.log` | Linux audit daemon syscall trail. Partial coverage : 22:47:02 to 23:41:54 local on 2026-05-16. |
+| `audit.log` | Linux audit daemon syscall trail. Partial coverage: 22:47:02 to 23:41:54 local on 2026-05-16. |
 | `syslog` | General system events. Full incident window. |
 | `cron.log` | Scheduled task execution. Only legitimate `svc_api` API health checks visible. |
 | `INCIDENT_METADATA.txt` | Initial NexaCorp summary, anchor timestamp. |
 
 ### 3.2 Evidence package limitations
 
-1. `audit.log` only covers 22:47:02 to 23:41:54 local time on 2026-05-16. The attack reference timestamp (19:43:01) and the `useradd it_support` event (19:47:07) fall outside the audit window. Both events were validated through alternate sources : `auth.log` for the useradd, metadata file for the escalation moment.
+1. `audit.log` only covers 22:47:02 to 23:41:54 local time on 2026-05-16. The attack reference timestamp (19:43:01) and the `useradd it_support` event (19:47:07) fall outside the audit window. Both events were validated through alternate sources: `auth.log` for the useradd, metadata file for the escalation moment.
 2. No log captures file write operations. The persistence file `/etc/cron.d/svc-updater` (per metadata) is not directly visible in Phase 1 evidence. Validated indirectly in Phase 2 by live system inspection after the Caldera run.
 3. The metadata file mentions `it_support` having sudo rights, but no related entries appear in the available logs. Documented as a Phase 2 system-inspection item.
 
@@ -88,15 +88,15 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 | Step | Description | Status |
 |---|---|---|
 | A | Read `INCIDENT_METADATA.txt`, anchor on attack timestamp | Done |
-| B | `auth.log` triage : enumerate failed and successful auth events | Done |
+| B | `auth.log` triage: enumerate failed and successful auth events | Done |
 | C | Identify initial access vector (SSH publickey vs password vs brute force) | Done |
-| D | Audit log analysis : privilege escalation mechanism | Done |
+| D | Audit log analysis: privilege escalation mechanism | Done |
 | E | Post-exploitation action mapping (4A through 4D) | Done |
 | F | IOC consolidation (IPs, accounts, file paths, key fingerprints) | Done |
 | G | Cross-correlation with INC-2026-001 (key origin, threat actor link) | Done |
 | H | Phase 1 report writing | Done |
-| I | Phase 2 setup : Wazuh dashboard + Caldera operation | Done |
-| J | Live attack run : `lab attack` + 30-min dashboard observation | Done |
+| I | Phase 2 setup: Wazuh dashboard + Caldera operation | Done |
+| J | Live attack run: `lab attack` + 30-min dashboard observation | Done |
 | K | False positive analysis | Done |
 | L | Detection improvement design (4 rules) | Done |
 | M | Phase 2 report integration | Done |
@@ -139,7 +139,7 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 - **Source IP (first login) :** `185.220.101.68` (Tor exit, Foundation for Applied Privacy)
 - **Beacon pattern :** 40 successful publickey logins between 17:43:43 and 19:42:37, interval approximately 3 minutes, all sources in `185.220.101.0/24`
 - **Key origin :** strongly attributable to INC-2026-001 (Liège services server compromise of the prior week) where the same threat actor had shell access on a host where `svc_api` was provisioned
-- **MITRE :** T1078.003 (Valid Accounts : Local Accounts), T1133 (External Remote Services), T1552.004 (Unsecured Credentials : Private Keys), T1572 (Protocol Tunneling, Tor C2)
+- **MITRE :** T1078.003 (Valid Accounts: Local Accounts), T1133 (External Remote Services), T1552.004 (Unsecured Credentials: Private Keys), T1572 (Protocol Tunneling, Tor C2)
 - **Confidence :** High
 
 ### I3 - Privilege escalation via SUID misconfiguration on `/usr/bin/find` (severity CRITICAL)
@@ -147,18 +147,18 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 - **Mechanism :** SUID bit set on `/usr/bin/find` (mode `0104755`, not standard on Debian 12)
 - **Evidence count :** 55 audit events tagged `key="suid_escalation"`
 - **Identity signature :** every event shows `uid=1000` (svc_api) and `euid=0` (root)
-- **Time window :** 22:47:02 to 23:41:54 local in `audit.log` (note : audit coverage starts later than the 19:43:01 escalation moment due to a logging gap, but the 55 captured events confirm the technique conclusively)
+- **Time window :** 22:47:02 to 23:41:54 local in `audit.log` (note: audit coverage starts later than the 19:43:01 escalation moment due to a logging gap, but the 55 captured events confirm the technique conclusively)
 - **Six chained commands observed :** `ps aux --no-headers` (112 occurrences), `find /home/svc_api -name *.log -newer /etc/hostname` (56), `bash -c "cat /proc/loadavg; ps aux | grep nexacorp-api"` (28), `bash -c "cat /etc/shadow | head -3; ls -la /root/.ssh"` (27), `cat /etc/shadow` (27), `find /home -name id_rsa` (54)
 - **Pattern :** highly automated, ~60-second cadence, consistent with a deployed beacon
 - **Root cause :** standard Debian 12 installations do NOT ship `find` with the SUID bit. Either an administrator set it manually for an automation script, or the attacker set it themselves after gaining initial access (subsequently used for self-escalation across reconnects)
-- **MITRE :** T1548.001 (Abuse Elevation Control Mechanism : Setuid and Setgid), T1057 (Process Discovery), T1083 (File and Directory Discovery)
+- **MITRE :** T1548.001 (Abuse Elevation Control Mechanism: Setuid and Setgid), T1057 (Process Discovery), T1083 (File and Directory Discovery)
 - **Confidence :** High
 
-### I4 - Credential dump : /etc/shadow read (severity CRITICAL)
+### I4 - Credential dump: /etc/shadow read (severity CRITICAL)
 
 - **Evidence :** 27 direct `cat /etc/shadow` invocations + 27 additional `bash -c` wrappers with `head -3` piping and redirection
 - **Implication :** every password hash on bru-app-01 is in the attacker's hands. The `head -3` pattern is consistent with offline password cracking offload via the active SSH session.
-- **MITRE :** T1003.008 (OS Credential Dumping : /etc/passwd and /etc/shadow)
+- **MITRE :** T1003.008 (OS Credential Dumping: /etc/passwd and /etc/shadow)
 - **Confidence :** High
 
 ### I5 - Backdoor user `it_support` created (severity HIGH)
@@ -168,14 +168,14 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 - **Password :** attacker-defined (content unknown, 50 ms gap between useradd and chpasswd is consistent with scripted creation)
 - **Social engineering note :** the username `it_support` is deliberately chosen to blend in during a quick administrative review of the account list
 - **Sudo rights :** asserted by metadata but not log-corroborated (Phase 2 system inspection item)
-- **MITRE :** T1136.001 (Create Account : Local Account)
+- **MITRE :** T1136.001 (Create Account: Local Account)
 - **Confidence :** High
 
 ### I6 - Systematic SSH key harvest (severity MEDIUM)
 
 - **Evidence :** 54 invocations of `find /home -name id_rsa`, plus enumeration of `/root/.ssh` via the bash wrapper
 - **Operational implication :** any host whose `authorized_keys` includes a key whose private counterpart resided on `bru-app-01` must be considered potentially compromised. A network-wide trust-relationship audit is required.
-- **MITRE :** T1552.004 (Unsecured Credentials : Private Keys)
+- **MITRE :** T1552.004 (Unsecured Credentials: Private Keys)
 - **Confidence :** High
 
 ### I7 - Cron persistence at `/etc/cron.d/svc-updater` (severity HIGH)
@@ -183,7 +183,7 @@ A NexaCorp SOC alert escalation followed the resolution of INC-2026-001 (Liège 
 - **Evidence in Phase 1 :** partial. The file is asserted by `INCIDENT_METADATA.txt`. `audit.log` does not capture the install event (coverage gap). `auth.log` and `syslog` do not record file writes. `cron.log` shows only legitimate `svc_api` API health checks in the available window.
 - **Evidence in Phase 2 :** validated by live system inspection of `tgt-blue11` after the Caldera run.
 - **Execution interval :** metadata states "every 10 minutes" in one place and "every 30 minutes" elsewhere, suggesting an internal metadata inconsistency or misreport. Operationally, any interval is concerning.
-- **MITRE :** T1053.003 (Scheduled Task/Job : Cron)
+- **MITRE :** T1053.003 (Scheduled Task/Job: Cron)
 - **Confidence :** Medium for Phase 1 (metadata + indirect support), High for Phase 2 (direct system observation)
 
 ---
@@ -235,13 +235,13 @@ Full IP list in the [findings report](../reports/INC-2026-002_Findings_Report.md
 
 | # | Timestamp | Source | Event |
 |---|---|---|---|
-| 01 | 2026-05-16 17:43:43 | auth.log | Initial access : SSH publickey auth as `svc_api` from `185.220.101.68` (Tor exit) |
+| 01 | 2026-05-16 17:43:43 | auth.log | Initial access: SSH publickey auth as `svc_api` from `185.220.101.68` (Tor exit) |
 | 02 | 2026-05-16 17:45:14 | auth.log | Brute-force diversion starts (first failed SSH attempt) |
 | 03 | 2026-05-16 17:43:43 to 19:42:37 | auth.log | 40 successful SSH publickey logins as `svc_api`, ~3-minute intervals, rotating Tor IPs |
 | 04 | 2026-05-16 19:41:06 | auth.log | Brute-force diversion ends (last failed SSH attempt) |
 | 05 | 2026-05-16 19:42:37 | auth.log | Last beacon login before privilege escalation |
 | 06 | **2026-05-16 19:43:01** | INCIDENT_METADATA | **Privilege escalation moment (attack reference timestamp)** |
-| 07 | 2026-05-16 19:47:07.478 | auth.log | Backdoor user creation : `useradd it_support` |
+| 07 | 2026-05-16 19:47:07.478 | auth.log | Backdoor user creation: `useradd it_support` |
 | 08 | 2026-05-16 19:47:07.527 | auth.log | Password set on `it_support` via `chpasswd` (50 ms after useradd) |
 | 09 | (likely 19:43 to 22:47 window) | inferred | Cron persistence file `/etc/cron.d/svc-updater` written (audit coverage gap) |
 | 10 | 2026-05-16 22:47:02 to 23:41:54 | audit.log | 55 SUID find exploit events (`uid=1000`, `euid=0`) |
@@ -260,19 +260,19 @@ Full IP list in the [findings report](../reports/INC-2026-002_Findings_Report.md
 
 | Task | Detection | Evidence count | Verdict |
 |---|---|---|---|
-| 1 : Brute force recon | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
-| 2 : SSH publickey access | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
-| 3 : SUID find escalation | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
-| 4A : /etc/shadow dump | Detected | 2 alerts (rule 100201) | Effective |
-| 4B : useradd backdoor | Detected | 2 alerts (rule 100202) | Effective |
-| 4C : SSH key harvest | Detected as side effect | 9 alerts (rule 100204) | Imprecise |
-| 4D : Cron persistence | Not detected | 0 alerts | **Critical gap** |
+| 1: Brute force recon | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
+| 2: SSH publickey access | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
+| 3: SUID find escalation | Not exercised by Caldera | 0 | Out of scope for Phase 2 |
+| 4A: /etc/shadow dump | Detected | 2 alerts (rule 100201) | Effective |
+| 4B: useradd backdoor | Detected | 2 alerts (rule 100202) | Effective |
+| 4C: SSH key harvest | Detected as side effect | 9 alerts (rule 100204) | Imprecise |
+| 4D: Cron persistence | Not detected | 0 alerts | **Critical gap** |
 
 ### 9.2 What Wazuh missed or detected imprecisely
 
-- Task 4D (cron persistence) : complete blind spot. No pre-existing rule monitored `/etc/cron.d/`. Closed by deployed rule `100205` plus `auditd-config.conf`.
-- Task 4C (SSH key harvest) : rule 100204 fires 9 times but all events show `exe="/usr/bin/find"` with proctitle `find / -perm -4000 -type f`. This is SUID enumeration that happens to traverse `.ssh` directories during its filesystem walk, not targeted SSH key harvest. Imprecise detection (catches the activity but mischaracterizes it). Follow-up : tune 100204 and add a focused rule on `find /home -name id_rsa` or `find . -name authorized_keys`.
-- Task 3 (SUID escalation) : not exercised by Caldera but well-attested in Phase 1 evidence. Rule `100203` designed to close the gap, shipped as **proposed** (not validated against live attack telemetry) because Caldera does not exercise the SUID escalation phase.
+- Task 4D (cron persistence): complete blind spot. No pre-existing rule monitored `/etc/cron.d/`. Closed by deployed rule `100205` plus `auditd-config.conf`.
+- Task 4C (SSH key harvest): rule 100204 fires 9 times but all events show `exe="/usr/bin/find"` with proctitle `find / -perm -4000 -type f`. This is SUID enumeration that happens to traverse `.ssh` directories during its filesystem walk, not targeted SSH key harvest. Imprecise detection (catches the activity but mischaracterizes it). Follow-up: tune 100204 and add a focused rule on `find /home -name id_rsa` or `find . -name authorized_keys`.
+- Task 3 (SUID escalation): not exercised by Caldera but well-attested in Phase 1 evidence. Rule `100203` designed to close the gap, shipped as **proposed** (not validated against live attack telemetry) because Caldera does not exercise the SUID escalation phase.
 
 ### 9.3 False positive analysis
 
@@ -289,10 +289,10 @@ All four categories share `auid=4294967295` (unset). Caldera attack events also 
 
 Four rules in `detection/` :
 
-1. `100201-shadow-access-tuned.xml` (deployed) : closes I4
-2. `100202-useradd-tuned.xml` (deployed) : closes I5
-3. `100205-cron-persistence-new.xml` (deployed) : closes I7
-4. `100203-suid-escalation-proposed.xml` (proposed) : closes I3 once promoted
+1. `100201-shadow-access-tuned.xml` (deployed): closes I4
+2. `100202-useradd-tuned.xml` (deployed): closes I5
+3. `100205-cron-persistence-new.xml` (deployed): closes I7
+4. `100203-suid-escalation-proposed.xml` (proposed): closes I3 once promoted
 
 See `detection/workflow.md` for per-rule rationale, deployment commands, and validation guidance.
 
@@ -302,7 +302,7 @@ See `detection/workflow.md` for per-rule rationale, deployment commands, and val
 
 - Recover the full file write history for the `19:43 to 22:47` window where the cron persistence was installed but no audit coverage exists. Filesystem-level forensics (timeline analysis via `mac-robber` or `fls`) on a snapshot of `bru-app-01` would close this gap.
 - Verify whether `it_support` actually has sudo rights. The metadata asserts this but no `sudoers` or `sudo` audit entries appear in the available logs. Live `id it_support` plus inspection of `/etc/sudoers` and `/etc/sudoers.d/` would resolve.
-- Trust-relationship audit : enumerate every NexaCorp host where the SSH key fingerprint `RSA SHA256:3Qx7kY9pLmNvWz2Hj8bFcA` is present in `authorized_keys`. Treat any such host as potentially compromised until proven otherwise.
+- Trust-relationship audit: enumerate every NexaCorp host where the SSH key fingerprint `RSA SHA256:3Qx7kY9pLmNvWz2Hj8bFcA` is present in `authorized_keys`. Treat any such host as potentially compromised until proven otherwise.
 - Promote rule `100203` from proposed to deployed by running Atomic Red Team `T1548.001` or a manual SSH replay exercising the SUID escalation step, then validate the rule fires.
 - Tune rule `100204` to suppress the SUID enumeration side-effect and add a focused SSH-key-harvest rule.
 
@@ -313,19 +313,19 @@ See `detection/workflow.md` for per-rule rationale, deployment commands, and val
 - Coach **Thomas Bataboudila** (BeCode lab coach) confirmed portfolio publication authorization for INC-2026-002 on 2026-05-17, same authorization as for INC-2026-001.
 - The PDF report v1 was generated on 2026-05-27 at 18:00 local. An audit pass at 19:07 the same day identified four micro-bugs (two section references, one carryover term from INC-2026-001, one timezone typo). PDF v2 corrects all four without regression and is the canonical deliverable in `reports/`.
 - The markdown source `INC-2026-002_Findings_Report.md` in this repository corresponds to the same content as PDF v2.
-- Lab harness command : `lab attack` initiates the Caldera operation against the learner's assigned target. Operation duration ~5.5 minutes. Wazuh alerts start appearing within 60 seconds of trigger.
+- Lab harness command: `lab attack` initiates the Caldera operation against the learner's assigned target. Operation duration ~5.5 minutes. Wazuh alerts start appearing within 60 seconds of trigger.
 
 ---
 
 ## 12. References
 
 - BeCode Brussels Blue & Red Team bootcamp Mission 02 briefings (BeCode IP, not redistributed in this repository)
-- [NIST SP 800-61r2 : Computer Security Incident Handling Guide](https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final)
+- [NIST SP 800-61r2: Computer Security Incident Handling Guide](https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final)
 - [SANS Incident Handler's Handbook (PICERL)](https://www.sans.org/blog/incident-handlers-handbook/)
 - [MITRE ATT&CK Enterprise v15](https://attack.mitre.org/)
 - [MITRE Caldera documentation](https://caldera.readthedocs.io/)
 - [Wazuh custom rules documentation](https://documentation.wazuh.com/current/user-manual/ruleset/custom.html)
-- INC-2026-001 (prior week's compromise, same threat actor) : https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001
+- INC-2026-001 (prior week's compromise, same threat actor): https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001
 
 ---
 

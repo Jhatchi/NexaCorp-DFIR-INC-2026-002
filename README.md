@@ -109,8 +109,8 @@ The 7 findings (`I1` to `I7`) are documented in detail in the [findings report](
 | **I1** | 🟢 LOW | Reconnaissance over Tor (39 failed logins, 8 enumerated usernames) as diversion | T1595.002, T1110.001 | 5.1 |
 | **I2** | 🟠 HIGH | Initial access as `svc_api` via stolen SSH private key over Tor | T1078.003, T1133, T1552.004 | 5.2 |
 | **I3** | 🔴 CRITICAL | Privilege escalation to root via SUID misconfiguration on `/usr/bin/find` | T1548.001 | 5.3 |
-| **I4** | 🔴 CRITICAL | Credential dump : 27 reads of `/etc/shadow` | T1003.008 | 5.4.1 |
-| **I5** | 🟠 HIGH | Backdoor user creation : `it_support` (uid 1002) with attacker-defined password | T1136.001 | 5.4.2 |
+| **I4** | 🔴 CRITICAL | Credential dump: 27 reads of `/etc/shadow` | T1003.008 | 5.4.1 |
+| **I5** | 🟠 HIGH | Backdoor user creation: `it_support` (uid 1002) with attacker-defined password | T1136.001 | 5.4.2 |
 | **I6** | 🟡 MEDIUM | Systematic SSH key harvest across `/home` and `/root/.ssh` (54 invocations) | T1552.004 | 5.4.3 |
 | **I7** | 🟠 HIGH | Cron persistence at `/etc/cron.d/svc-updater` (partial Phase 1 proof, Phase 2 validated) | T1053.003 | 5.4.4 |
 
@@ -131,7 +131,7 @@ The deliverable is **4 Wazuh XML rules** addressing these findings, with explici
 | [`100201`](detection/100201-shadow-access-tuned.xml) | Tuning | **Deployed** | False positives from Wazuh FIM and cron daemon on `/etc/shadow` | I4 |
 | [`100202`](detection/100202-useradd-tuned.xml) | Tuning | **Deployed** | False positive from Wazuh syscollector `useradd -D` | I5 |
 | [`100205`](detection/100205-cron-persistence-new.xml) | New rule | **Deployed** | Blind spot on `/etc/cron.d/` file creation | I7 |
-| [`100203`](detection/100203-suid-escalation-proposed.xml) | New rule | **Proposed (not deployed in this lab run)** | Phase 1 Task 3 gap : 55 SUID escalation events captured but no Wazuh rule fired | I3 |
+| [`100203`](detection/100203-suid-escalation-proposed.xml) | New rule | **Proposed (not deployed in this lab run)** | Phase 1 Task 3 gap: 55 SUID escalation events captured but no Wazuh rule fired | I3 |
 
 **Why one rule is "proposed" and not deployed.** The Caldera adversary profile starts at root (it operates as a systemd service, not as an SSH-authenticated intruder) and therefore skips the SUID escalation phase entirely. The `100203` rule design closes a real Phase 1 detection gap, but it could not be validated against live attack telemetry within this lab's architecture. Promoting it from proposed to deployed would require Atomic Red Team or a manual SSH replay to exercise the privesc step. Distinguishing deployed-and-validated rules from designed-but-untested ones matters for a recruiter reading this work as honest output.
 
@@ -143,11 +143,11 @@ The deliverable is **4 Wazuh XML rules** addressing these findings, with explici
 
 The engagement follows three industry-standard frameworks layered together.
 
-### NIST SP 800-61r2 : Computer Security Incident Handling Guide
+### NIST SP 800-61r2: Computer Security Incident Handling Guide
 
 NIST's 4-phase model (Preparation, Detection & Analysis, Containment / Eradication / Recovery, Post-Incident Activity) provides the high-level structure. In this engagement, **Phase 1 of the deliverable maps to NIST "Detection & Analysis"** (offline log forensics, attacker timeline reconstruction). **Phase 2 maps to NIST "Lessons Learned"** translated into preventive controls (the four Wazuh rules and the prioritized recommendation list in report section 8).
 
-### SANS PICERL : tactical investigation flow
+### SANS PICERL: tactical investigation flow
 
 PICERL (Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned) is the SANS Incident Response Process. Applied in this engagement:
 
@@ -155,10 +155,10 @@ PICERL (Preparation, Identification, Containment, Eradication, Recovery, Lessons
 |---|---|
 | **Preparation** | Coach-validated lab environment, defined scope (forensic + detection eng), evidence bundle handed off by the engagement coordinator |
 | **Identification** | auth.log + audit.log + cron.log correlation, hypothesis-driven reconstruction (initial access vector, escalation mechanism, persistence inventory) |
-| **Containment / Eradication / Recovery** | Documented as P0 recommendations in report section 8 (key rotation, backdoor user removal, cron file removal, SUID baseline audit) but not executed : the engagement scope is forensic analysis and detection engineering, not active response |
-| **Lessons Learned** | Phase 2 detection engineering : four Wazuh rules with false positive analysis (report section 9) |
+| **Containment / Eradication / Recovery** | Documented as P0 recommendations in report section 8 (key rotation, backdoor user removal, cron file removal, SUID baseline audit) but not executed: the engagement scope is forensic analysis and detection engineering, not active response |
+| **Lessons Learned** | Phase 2 detection engineering: four Wazuh rules with false positive analysis (report section 9) |
 
-### MITRE ATT&CK : technique mapping
+### MITRE ATT&CK: technique mapping
 
 Every finding is mapped to one or more MITRE ATT&CK techniques to allow the client to correlate this incident with their existing threat model. **12 distinct techniques** are referenced across the 7 findings:
 
@@ -180,26 +180,26 @@ Every claim in the report is traceable to a log line in the evidence bundle, wit
 
 **Offline log forensics (Phase 1)**
 
-- Standard Unix toolchain : `grep`, `awk`, `sort`, `uniq`, `xxd` for log mining, pattern extraction, and binary inspection
+- Standard Unix toolchain: `grep`, `awk`, `sort`, `uniq`, `xxd` for log mining, pattern extraction, and binary inspection
 - `auditctl` reference documentation for decoding audit syscall records and rule keys
-- No specialized commercial DFIR tooling required : the entire Phase 1 investigation is reproducible from the evidence bundle with the commands documented inline in the report
+- No specialized commercial DFIR tooling required: the entire Phase 1 investigation is reproducible from the evidence bundle with the commands documented inline in the report
 
 **SIEM and host telemetry (Phase 1 + Phase 2)**
 
-- [Wazuh](https://wazuh.com/) (manager + dashboard, version 4.x) : alert review via Threat Hunting / Discover, field-level filtering on `data.audit.exe`, `data.audit.key`, `data.audit.auid`, `data.audit.execve.a*`, rule lookup and ruleset edits
-- Linux audit daemon (`auditd`) : syscall recording on the target, key-tagged rules for `shadow_access`, `useradd`, `suid_escalation`, `ssh_keys`, and the proposed `cron_persistence` watch documented in [`detection/auditd-config.conf`](detection/auditd-config.conf)
+- [Wazuh](https://wazuh.com/) (manager + dashboard, version 4.x): alert review via Threat Hunting / Discover, field-level filtering on `data.audit.exe`, `data.audit.key`, `data.audit.auid`, `data.audit.execve.a*`, rule lookup and ruleset edits
+- Linux audit daemon (`auditd`): syscall recording on the target, key-tagged rules for `shadow_access`, `useradd`, `suid_escalation`, `ssh_keys`, and the proposed `cron_persistence` watch documented in [`detection/auditd-config.conf`](detection/auditd-config.conf)
 
 **Adversary emulation (Phase 2)**
 
-- [MITRE Caldera 5.x](https://caldera.mitre.org/) : `lab2-linux-privesc` adversary profile, deployed Sandcat agent as systemd service, 5.5 min run against `tgt-blue11`
-- `lab attack` lab harness : triggers the Caldera operation against the learner's assigned target
+- [MITRE Caldera 5.x](https://caldera.mitre.org/): `lab2-linux-privesc` adversary profile, deployed Sandcat agent as systemd service, 5.5 min run against `tgt-blue11`
+- `lab attack` lab harness: triggers the Caldera operation against the learner's assigned target
 
 **Reference frameworks**
 
-- [NIST SP 800-61r2](https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final) : Computer Security Incident Handling Guide
-- [SANS PICERL](https://www.sans.org/blog/incident-handlers-handbook/) : tactical investigation flow
-- [MITRE ATT&CK Enterprise v15](https://attack.mitre.org/) : technique attribution
-- [MITRE Caldera documentation](https://caldera.readthedocs.io/) : adversary emulation framework reference
+- [NIST SP 800-61r2](https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final): Computer Security Incident Handling Guide
+- [SANS PICERL](https://www.sans.org/blog/incident-handlers-handbook/): tactical investigation flow
+- [MITRE ATT&CK Enterprise v15](https://attack.mitre.org/): technique attribution
+- [MITRE Caldera documentation](https://caldera.readthedocs.io/): adversary emulation framework reference
 
 ## Repository layout
 
@@ -246,28 +246,28 @@ Every claim in the findings report is traceable to a log line in the evidence bu
 Requires the evidence bundle (`auth.log`, `audit.log`, `cron.log`, `syslog`, `INCIDENT_METADATA.txt`):
 
 ```bash
-# I1 : Reconnaissance volume and time window
+# I1: Reconnaissance volume and time window
 grep "Failed password" auth.log | wc -l                                  # expect 39
 grep "Failed password" auth.log | head -1                                # first attempt
 grep "Failed password" auth.log | tail -1                                # last attempt
 grep "Failed password" auth.log | grep -oE "from [0-9.]+" | sort -u      # 36 distinct IPs
 grep "Failed password" auth.log | grep -oE "invalid user [^ ]+" | sort -u  # 8 enumerated usernames
 
-# I2 : Initial access via SSH publickey
+# I2: Initial access via SSH publickey
 grep "Accepted publickey" auth.log | wc -l                                            # expect 40
 grep "Accepted publickey" auth.log | head -1                                          # initial access timestamp
 grep "Accepted publickey" auth.log | grep -oE "SHA256:[A-Za-z0-9+/=]+" | sort -u      # single key fingerprint
 
-# I3 : Privilege escalation via SUID find
+# I3: Privilege escalation via SUID find
 grep "/usr/bin/find" audit.log | grep 'key="suid_escalation"' | wc -l   # expect 55
 grep "type=PROCTITLE" audit.log | awk -F'proctitle=' '{print $2}' \
   | sort | uniq -c | sort -rn                                            # 6 unique commands
 
-# I4 / I6 : Shadow dump and SSH key harvest
+# I4 / I6: Shadow dump and SSH key harvest
 grep '/etc/shadow' audit.log | wc -l                                     # shadow reads
 grep 'find /home -name id_rsa' audit.log | wc -l                         # 54 key sweeps
 
-# I5 : Backdoor user creation
+# I5: Backdoor user creation
 grep -i "useradd\|new user\|chpasswd" auth.log
 ```
 
@@ -306,17 +306,17 @@ sudo /var/ossec/bin/wazuh-logtest
 - **Caldera emulation does not exercise the upstream kill chain.** Caldera starts as a root systemd service, skipping the SSH publickey initial access and SUID find escalation phases. Phase 2 detection validation is therefore scoped to post-exploitation tasks only (4A through 4D). The SUID escalation rule (`100203`) remains a proposed rule, not deployed-and-validated. Complete detection-validation coverage would require Atomic Red Team or a manual SSH replay to exercise Tasks 1 to 3.
 - **Caldera and benign daemons share `auid=4294967295`.** The unset audit-login UID is not a viable discriminator for tuning, because the legitimate Caldera detections share this signature with the false-positive daemons (Wazuh modulesd, cron, systemd-tmpfile). Tuning is per-executable path and argument pattern instead.
 - **Timezone normalization.** The INCIDENT_METADATA.txt asserts UTC, but cross-correlation with auth.log timestamps confirms the metadata is in fact in local Brussels time (CEST, UTC+02:00). All timestamps in this report are normalized to local time.
-- **Scope was forensic + detection engineering, not live response.** Containment, eradication, forensic acquisition (memory image, disk image), and trust-relationship audit across NexaCorp infrastructure are documented as **P0 recommendations** in the report, but were not executed : the engagement did not have multi-host access. A follow-up engagement would be required to close those loops.
+- **Scope was forensic + detection engineering, not live response.** Containment, eradication, forensic acquisition (memory image, disk image), and trust-relationship audit across NexaCorp infrastructure are documented as **P0 recommendations** in the report, but were not executed: the engagement did not have multi-host access. A follow-up engagement would be required to close those loops.
 
 ## License
 
 [MIT](LICENSE), 2026 Johan-Emmanuel Hatchi.
 
-The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report text are all released under the same MIT license : free to copy, adapt, and redeploy with attribution. The evidence bundle, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
+The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report text are all released under the same MIT license: free to copy, adapt, and redeploy with attribution. The evidence bundle, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
 
 ## Acknowledgments
 
-- **Thomas Bataboudila** (BeCode lab coach) : scenario design, evidence bundle preparation, publication authorization for portfolio use (2026-05-17).
+- **Thomas Bataboudila** (BeCode lab coach): scenario design, evidence bundle preparation, publication authorization for portfolio use (2026-05-17).
 - **MITRE** for the Caldera framework that powered Phase 2 adversary emulation, and for the ATT&CK knowledge base used to map every finding.
 - **Wazuh project** for the open-source SIEM that ingested the audit telemetry and ran the deployed ruleset.
 
@@ -324,7 +324,7 @@ The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report t
 
 Solo DFIR + detection engineering engagement delivered during the [BeCode Brussels](https://becode.org) Blue & Red Team bootcamp (November 2025 to September 2026), Mission 02, on 2026-05-27.
 
-Author : **Johan-Emmanuel Hatchi**, French national based in Brussels, cybersecurity student at BeCode Brussels (Nov 2025 to Sep 2026), active internship search for September 2026.
+Author: **Johan-Emmanuel Hatchi**, French national based in Brussels, cybersecurity student at BeCode Brussels (Nov 2025 to Sep 2026), active internship search for September 2026.
 
 [GitHub](https://github.com/Jhatchi) - [LinkedIn](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
 
