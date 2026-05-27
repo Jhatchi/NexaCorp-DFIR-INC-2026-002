@@ -57,7 +57,7 @@ All IP addresses, hostnames, account names, and indicators of compromise publish
 ## Executive summary
 
 > 📄 **The full 39-page findings report is the canonical deliverable.**
-> [Download the PDF](reports/Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf) (159 KB) or [browse the Markdown source](reports/INC-2026-002_Findings_Report.md) for grep/citation.
+> [Download the PDF](reports/INC-2026-002_Findings_Report.pdf) (159 KB) or [browse the Markdown source](reports/INC-2026-002_Findings_Report.md) for grep/citation.
 
 On **2026-05-16 at 17:43:43 local Brussels time**, a threat actor authenticated to bru-app-01 as the service account `svc_api` using a valid SSH private key the actor should not have possessed. The key was almost certainly harvested during the prior week's compromise of the Liège services server ([INC-2026-001](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001)) where the same actor had shell access. The initial login originated from `185.220.101.68`, a Tor exit node, and was followed by 40 successive publickey logins over approximately two hours, all from IPs in the `185.220.101.0/24` range, with a consistent 3-minute interval consistent with an automated beacon rather than interactive activity.
 
@@ -88,9 +88,9 @@ The repository is organized so that you can dive in at the right depth for your 
 
 | If you are a... | Start here | Time |
 |---|---|---|
-| **Recruiter or hiring manager** | This README + skim the [PDF](reports/Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf) executive summary | 5 min |
-| **SOC analyst evaluating fit** | [PDF sections 5 (Findings) and 9 (Phase 2 live detection)](reports/Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf) + [`detection/`](detection/) | 25 min |
-| **DFIR practitioner** | Full [PDF](reports/Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf) + [`notes/journal.md`](notes/journal.md) for the investigation trail | 60 min |
+| **Recruiter or hiring manager** | This README + skim the [PDF](reports/INC-2026-002_Findings_Report.pdf) executive summary | 5 min |
+| **SOC analyst evaluating fit** | [PDF sections 5 (Findings) and 9 (Phase 2 live detection)](reports/INC-2026-002_Findings_Report.pdf) + [`detection/`](detection/) | 25 min |
+| **DFIR practitioner** | Full [PDF](reports/INC-2026-002_Findings_Report.pdf) + [`notes/journal.md`](notes/journal.md) for the investigation trail | 60 min |
 | **Detection engineer** | [`detection/workflow.md`](detection/workflow.md) for rationale + the four XML rules + [`detection/auditd-config.conf`](detection/auditd-config.conf) | 30 min |
 | **Anyone who wants to grep, cite, or diff** | [Markdown source of the report](reports/INC-2026-002_Findings_Report.md) | as needed |
 
@@ -174,7 +174,7 @@ The complete technique table per finding is in **report section 6** and the per-
 
 ### Reproducibility
 
-Every claim in the report is traceable to a log line in the evidence bundle, with the exact `grep` or `awk` filter needed to reproduce it. The investigation commands are documented inline within each finding subsection in the report. See **Appendix A (Investigation Tooling)** in the [PDF](reports/Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf) and the **[Reproducibility](#reproducibility) section below** for a quick-start.
+Every claim in the report is traceable to a log line in the evidence bundle, with the exact `grep` or `awk` filter needed to reproduce it. The investigation commands are documented inline within each finding subsection in the report. See **Appendix A (Investigation Tooling)** in the [PDF](reports/INC-2026-002_Findings_Report.pdf) and the **[Reproducibility](#reproducibility) section below** for a quick-start.
 
 ## Tools used
 
@@ -212,7 +212,7 @@ NexaCorp-DFIR-INC-2026-002/
 │   └── workflows/
 │       └── checks.yml                                   markdownlint + xmllint + typography validation
 ├── reports/
-│   ├── Johan-Emmanuel_Hatchi_INC-2026-002_Report_v2.pdf canonical 39-page deliverable
+│   ├── INC-2026-002_Findings_Report.pdf                  canonical 39-page deliverable
 │   └── INC-2026-002_Findings_Report.md                  same content, Markdown source
 ├── detection/
 │   ├── workflow.md                                      rationale, deployment status, mapping to findings
