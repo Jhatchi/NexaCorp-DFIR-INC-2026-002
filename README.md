@@ -23,6 +23,7 @@ All IP addresses, hostnames, account names, and indicators of compromise publish
 |---|---|
 | Reference | `BCC-2026 / INC-2026-002` |
 | Related incident | [`INC-2026-001`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001) (same threat actor, prior week) |
+| Continuation | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
 | Phases | Phase 1 (offline forensics) + Phase 2 (live Caldera emulation in Wazuh) |
 | Delivered | 2026-05-27 |
 | Status | Complete (Phase 1 + Phase 2) |
@@ -66,6 +67,8 @@ In parallel with the beacon channel, the actor generated 39 deliberately low-vol
 At **19:43:01 local**, the actor escalated to root by abusing a SUID misconfiguration on `/usr/bin/find` (mode `0104755`, not standard on Debian 12). The audit log captured 55 events with `key="suid_escalation"` showing the classic `uid=1000 / euid=0` divergence. The escalation was used to chain six distinct commands in a roughly 60-second cadence: process enumeration, log search, sensitive-data probe, direct `/etc/shadow` read (27 occurrences), and systematic SSH key sweep across `/home` and `/root/.ssh` (54 invocations of `find /home -name id_rsa`).
 
 At **19:47:07 local**, the actor created a backdoor user `it_support` (UID 1002) with an attacker-defined password set 50 ms after the useradd. The metadata also reports a cron persistence file at `/etc/cron.d/svc-updater`, validated indirectly during Phase 2 by the running system.
+
+The full three-incident kill chain (INC-2026-001 + INC-2026-002 + INC-2026-003) is consolidated in the Month 1 Assessment Report delivered on 2026-05-29: see [INC-2026-003](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003).
 
 **Phase 2 (live Caldera run).** The `lab2-linux-privesc` adversary profile was triggered against `tgt-blue11` for 5.5 minutes on 2026-05-27. Of the four post-exploitation tasks the actor performed in Phase 1, the existing Wazuh ruleset detected only two reliably (`/etc/shadow` access via rule 100201, useradd via rule 100202), detected one imprecisely as a side effect (SSH key harvest, caught by SUID enumeration rule 100204 firing on collateral filesystem traversal), and missed the cron persistence entirely. A four-improvement detection package addresses all gaps: see [Detection engineering](#detection-engineering) below.
 
