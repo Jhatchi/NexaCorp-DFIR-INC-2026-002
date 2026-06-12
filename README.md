@@ -214,7 +214,7 @@ NexaCorp-DFIR-INC-2026-002/
 ├── .gitignore
 ├── .github/
 │   └── workflows/
-│       └── checks.yml                                   markdownlint + xmllint + typography validation
+│       └── ci.yml                                      markdownlint + typography validation
 ├── reports/
 │   ├── INC-2026-002_Findings_Report.pdf                  canonical 39-page deliverable
 │   └── INC-2026-002_Findings_Report.md                  same content, Markdown source
@@ -239,7 +239,7 @@ NexaCorp-DFIR-INC-2026-002/
 | `detection/auditd-config.conf` | Auditd watches required by rule `100205` | SOC / detection engineer |
 | `detection/workflow.md` | Per-rule rationale and deployment status | Detection engineer onboarding |
 | `notes/journal.md` | Investigation working notebook | DFIR practitioner studying the method |
-| `.github/workflows/checks.yml` | Automated markdownlint + XML + typography validation on push | CI |
+| `.github/workflows/ci.yml` | Automated markdownlint + typography validation on push | CI |
 
 ## Reproducibility
 
@@ -282,7 +282,7 @@ Requires a Wazuh manager (4.x), an agent on the target VM with auditd enabled, a
 Validating the four delivered Wazuh rules :
 
 ```bash
-# 1. Validate XML syntax (same check the CI runs)
+# 1. Validate XML syntax (recommended locally before deploying)
 xmllint --noout detection/*.xml
 
 # 2. Drop the rules into the Wazuh manager's custom rule directory
