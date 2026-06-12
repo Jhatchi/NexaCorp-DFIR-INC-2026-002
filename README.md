@@ -2,7 +2,7 @@
 
 Forensic investigation of a coordinated Linux post-exploitation campaign against `bru-app-01` (NexaCorp's Brussels internal application server), with Wazuh detection coverage analysis and rule tuning proposals validated by live MITRE Caldera adversary emulation. Conducted as a solo engagement during the BeCode Brussels Blue & Red Team bootcamp (Mission 02), as a direct continuation of [INC-2026-001](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001).
 
-[![checks](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002/actions/workflows/checks.yml/badge.svg)](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002/actions/workflows/checks.yml)
+[![ci](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002/actions/workflows/ci.yml/badge.svg)](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-002/actions/workflows/ci.yml)
 [![Methodology](https://img.shields.io/badge/methodology-NIST%20SP%20800--61r2-blue.svg)](#methodology)
 [![Framework](https://img.shields.io/badge/framework-MITRE%20ATT%26CK-red.svg)](https://attack.mitre.org/)
 [![Detection](https://img.shields.io/badge/Wazuh-4%20rules%20delivered-green.svg)](detection/)
@@ -24,6 +24,7 @@ All IP addresses, hostnames, account names, and indicators of compromise publish
 | Reference | `BCC-2026 / INC-2026-002` |
 | Related incident | [`INC-2026-001`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001) (same threat actor, prior week) |
 | Continuation | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
+| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01) and [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell) |
 | Phases | Phase 1 (offline forensics) + Phase 2 (live Caldera emulation in Wazuh) |
 | Delivered | 2026-05-27 |
 | Status | Complete (Phase 1 + Phase 2) |
