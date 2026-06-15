@@ -1,42 +1,18 @@
----
-title: "INC-2026-002 : Incident Investigation Report"
-subtitle: "Root-level compromise of bru-app-01 (NexaCorp Brussels DC)"
-author: "Johan-Emmanuel Hatchi"
-team: "BLUE"
-team_color: "BLUE"
-classification: "CRITICAL"
-incident_id: "INC-2026-002"
-related_incident: "INC-2026-001"
-target_host: "bru-app-01"
-target_os: "Debian 12"
-incident_date: "2026-05-16"
-investigation_date: "2026-05-27"
-report_version: "v2"
-report_status: "final"
-investigator: "Johan-Emmanuel Hatchi, BeCode Corp SOC Team"
-mitre_techniques:
-  - T1078.003
-  - T1133
-  - T1110.001
-  - T1595.002
-  - T1552.004
-  - T1572
-  - T1548.001
-  - T1057
-  - T1083
-  - T1003.008
-  - T1136.001
-  - T1053.003
----
+# INC-2026-002 Findings Report: Privilege Escalation and Persistence
 
+**Engagement:** NexaCorp DFIR, Privilege Escalation and Persistence (SUID, backdoor account, SSH key harvest)
+**Reference:** BCC-2026 / INC-2026-002
+**Target system:** bru-app-01 (NexaCorp Brussels internal application server, Debian 12)
+**Analyst:** Johan-Emmanuel Hatchi, SOC Analyst L1, BeCode Corp
+**Team:** Blue Team
+**Incident date:** 2026-05-16
+**Investigation date:** 2026-05-27
+**Report version:** v2 (final)
+**Related incident:** INC-2026-001 (Liège services server, same threat actor)
+**MITRE ATT&CK:** T1078.003, T1133, T1110.001, T1595.002, T1552.004, T1572, T1548.001, T1057, T1083, T1003.008, T1136.001, T1053.003
+**Classification:** CRITICAL, root-level compromise, data exfiltration risk
 
-**Classification :** CRITICAL, Root-level compromise, data exfiltration risk
-**Target host :** bru-app-01 (NexaCorp Brussels internal application server)
-**Incident date :** 2026-05-16
-**Investigation date :** 2026-05-27
-**Investigator :** Johan-Emmanuel Hatchi, BeCode Corp SOC Team
-**Report version :** v1 (draft)
-**Related incident :** INC-2026-001 (Liège services server, same threat actor)
+> All timestamps in this report are in local Brussels time (CEST, UTC+02:00) unless otherwise indicated.
 
 ---
 
