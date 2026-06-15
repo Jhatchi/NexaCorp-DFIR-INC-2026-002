@@ -22,9 +22,6 @@ All IP addresses, hostnames, account names, and indicators of compromise publish
 | Engagement metadata | Value |
 |---|---|
 | Reference | `BCC-2026 / INC-2026-002` |
-| Related incident | [`INC-2026-001`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001) (same threat actor, prior week) |
-| Continuation | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
-| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01), [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell), and [`INC-2026-006`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006) (stored XSS and session hijacking) |
 | Phases | Phase 1 (offline forensics) + Phase 2 (live Caldera emulation in Wazuh) |
 | Delivered | 2026-05-27 |
 | Status | Complete (Phase 1 + Phase 2) |
@@ -85,6 +82,18 @@ The full three-incident kill chain (INC-2026-001 + INC-2026-002 + INC-2026-003) 
 | Persistence | `/etc/cron.d/svc-updater` | Cron file, per metadata + system inspection |
 | Privesc vector | `/usr/bin/find` mode `0104755` | SUID misconfiguration |
 | SSH key fingerprint | `RSA SHA256:3Qx7kY9pLmNvWz2Hj8bFcA` | Single fingerprint across all 40 logins |
+
+## Kill chain summary
+
+The attacker chained valid-credential access into root and durable persistence on `bru-app-01`:
+
+1. **Reconnaissance diversion**: 39 low-volume SSH failures from 36 Tor exit IPs against 8 usernames, below fail2ban thresholds, run as noise (Finding I1).
+2. **Initial access**: authentication as the service account `svc_api` using a stolen SSH private key over Tor, almost certainly harvested during INC-2026-001 (Finding I2).
+3. **Privilege escalation**: root obtained via a SUID misconfiguration on `/usr/bin/find` (Finding I3).
+4. **Credential dump**: 27 reads of `/etc/shadow` (Finding I4).
+5. **SSH key harvest**: systematic sweep across `/home` and `/root/.ssh` (Finding I6).
+6. **Backdoor account**: creation of `it_support` (uid 1002) with an attacker-defined password (Finding I5).
+7. **Persistence**: a cron file at `/etc/cron.d/svc-updater` (Finding I7).
 
 ## How to read this report
 
@@ -312,11 +321,14 @@ sudo /var/ossec/bin/wazuh-logtest
 - **Timezone normalization.** The INCIDENT_METADATA.txt asserts UTC, but cross-correlation with auth.log timestamps confirms the metadata is in fact in local Brussels time (CEST, UTC+02:00). All timestamps in this report are normalized to local time.
 - **Scope was forensic + detection engineering, not live response.** Containment, eradication, forensic acquisition (memory image, disk image), and trust-relationship audit across NexaCorp infrastructure are documented as **P0 recommendations** in the report, but were not executed: the engagement did not have multi-host access. A follow-up engagement would be required to close those loops.
 
-## License
+## NexaCorp DFIR series
 
-[MIT](LICENSE), 2026 Johan-Emmanuel Hatchi.
-
-The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report text are all released under the same MIT license: free to copy, adapt, and redeploy with attribution. The evidence bundle, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
+- [INC-2026-001](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001): Linux infrastructure compromise (vsftpd backdoor, Caldera C2)
+- **INC-2026-002**: this repository
+- [INC-2026-003](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003): month-1 cross-incident assessment
+- [INC-2026-004](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004): SQL injection (web portal)
+- [INC-2026-005](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005): OS command injection and web shell (web portal)
+- [INC-2026-006](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006): stored XSS and session hijacking (web portal)
 
 ## Acknowledgments
 
@@ -333,3 +345,9 @@ Author: **Johan-Emmanuel Hatchi**, French national based in Brussels, cybersecur
 [GitHub](https://github.com/Jhatchi) - [LinkedIn](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
 
 Open to cybersecurity internship opportunities starting September 2026 in Belgium. Looking for SOC L1/L2, DFIR junior, or detection engineering roles where this kind of end-to-end work (offline forensics, SIEM tuning, adversary emulation, formal client reporting) is in scope.
+
+## License
+
+[MIT](LICENSE), 2026 Johan-Emmanuel Hatchi.
+
+The Wazuh rules in `detection/*.xml`, the auditd configuration, and the report text are all released under the same MIT license: free to copy, adapt, and redeploy with attribution. The evidence bundle, lab infrastructure, and engagement briefings remain BeCode Brussels property and are not redistributed.
