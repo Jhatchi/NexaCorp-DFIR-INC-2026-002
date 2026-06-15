@@ -24,7 +24,7 @@ All IP addresses, hostnames, account names, and indicators of compromise publish
 | Reference | `BCC-2026 / INC-2026-002` |
 | Related incident | [`INC-2026-001`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001) (same threat actor, prior week) |
 | Continuation | [`INC-2026-003`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-003) (Month 1 Assessment, three-incident kill chain) |
-| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01) and [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell) |
+| Later missions | [`INC-2026-004`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-004) (SQL injection on bru-web-01), [`INC-2026-005`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-005) (OS command injection and web shell), and [`INC-2026-006`](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-006) (stored XSS and session hijacking) |
 | Phases | Phase 1 (offline forensics) + Phase 2 (live Caldera emulation in Wazuh) |
 | Delivered | 2026-05-27 |
 | Status | Complete (Phase 1 + Phase 2) |
