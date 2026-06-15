@@ -1,4 +1,4 @@
-# NexaCorp DFIR Engagement (INC-2026-002)
+# NexaCorp DFIR Engagement (INC-2026-002) - Privilege Escalation and Persistence
 
 Forensic investigation of a coordinated Linux post-exploitation campaign against `bru-app-01` (NexaCorp's Brussels internal application server), with Wazuh detection coverage analysis and rule tuning proposals validated by live MITRE Caldera adversary emulation. Conducted as a solo engagement during the BeCode Brussels Blue & Red Team bootcamp (Mission 02), as a direct continuation of [INC-2026-001](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001).
 
