@@ -1,5 +1,5 @@
-# INC-2026-002 - NexaCorp Brussels Intrusion Investigation
-## Investigation Journal - Phase 1 + Phase 2 Complete
+# Investigation Journal: INC-2026-002
+## Phase 1 + Phase 2 Complete
 
 ---
 
@@ -294,7 +294,7 @@ Four rules in `detection/` :
 3. `100205-cron-persistence-new.xml` (deployed): closes I7
 4. `100203-suid-escalation-proposed.xml` (proposed): closes I3 once promoted
 
-See `detection/workflow.md` for per-rule rationale, deployment commands, and validation guidance.
+See `detection/README.md` for per-rule rationale, deployment commands, and validation guidance.
 
 ---
 

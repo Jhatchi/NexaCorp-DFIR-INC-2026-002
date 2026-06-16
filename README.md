@@ -104,14 +104,14 @@ The repository is organized so that you can dive in at the right depth for your 
 | **Recruiter or hiring manager** | This README + skim the [PDF](reports/INC-2026-002_Findings_Report.pdf) executive summary | 5 min |
 | **SOC analyst evaluating fit** | [PDF sections 5 (Findings) and 9 (Phase 2 live detection)](reports/INC-2026-002_Findings_Report.pdf) + [`detection/`](detection/) | 25 min |
 | **DFIR practitioner** | Full [PDF](reports/INC-2026-002_Findings_Report.pdf) + [`notes/journal.md`](notes/journal.md) for the investigation trail | 60 min |
-| **Detection engineer** | [`detection/workflow.md`](detection/workflow.md) for rationale + the four XML rules + [`detection/auditd-config.conf`](detection/auditd-config.conf) | 30 min |
+| **Detection engineer** | [`detection/README.md`](detection/README.md) for rationale + the four XML rules + [`detection/auditd-config.conf`](detection/auditd-config.conf) | 30 min |
 | **Anyone who wants to grep, cite, or diff** | [Markdown source of the report](reports/INC-2026-002_Findings_Report.md) | as needed |
 
 **Canonical deliverable:** the PDF in `reports/`. The Markdown source is the same content, kept in the repo for searchability and version control.
 
 **Investigation trail:** `notes/journal.md` is the analyst's working notebook covering scope, methodology, hypotheses, findings log, IOC inventory, and timeline reconstruction. It complements the formal report by showing **how** the conclusions were reached.
 
-**Detection ruleset:** `detection/` contains four Wazuh XML rule files (two tunings, one new deployed, one proposed) plus the auditd watch configuration needed for the cron persistence rule. `detection/workflow.md` documents the rationale for each rule, the mapping to Phase 1 findings, and the deployed-vs-proposed status.
+**Detection ruleset:** `detection/` contains four Wazuh XML rule files (two tunings, one new deployed, one proposed) plus the auditd watch configuration needed for the cron persistence rule. `detection/README.md` documents the rationale for each rule, the mapping to Phase 1 findings, and the deployed-vs-proposed status.
 
 ## Findings summary
 
@@ -148,7 +148,7 @@ The deliverable is **4 Wazuh XML rules** addressing these findings, with explici
 
 **Why one rule is "proposed" and not deployed.** The Caldera adversary profile starts at root (it operates as a systemd service, not as an SSH-authenticated intruder) and therefore skips the SUID escalation phase entirely. The `100203` rule design closes a real Phase 1 detection gap, but it could not be validated against live attack telemetry within this lab's architecture. Promoting it from proposed to deployed would require Atomic Red Team or a manual SSH replay to exercise the privesc step. Distinguishing deployed-and-validated rules from designed-but-untested ones matters for a recruiter reading this work as honest output.
 
-**Auditd companion configuration.** Rule `100205` only fires if the agent's auditd is configured to watch the cron directories. The required watches are in [`detection/auditd-config.conf`](detection/auditd-config.conf) and documented in [`detection/workflow.md`](detection/workflow.md).
+**Auditd companion configuration.** Rule `100205` only fires if the agent's auditd is configured to watch the cron directories. The required watches are in [`detection/auditd-config.conf`](detection/auditd-config.conf) and documented in [`detection/README.md`](detection/README.md).
 
 **Phase 2 false positive analysis.** The Caldera run exposed four categories of benign noise: Wazuh self-monitoring (FIM probes on `/etc/shadow`), Wazuh inventory (`useradd -D` for default-value lookups), cron daemon user-cache rebuilds, and systemd cleanup traversing SSH directories. All four share `auid=4294967295` (unset), but so does Caldera itself (no SSH login behind it), which rules out `auid` as a tuning discriminator. The fix is per-executable path exclusion and argument-pattern matching, as implemented in the two tuning rules above.
 
@@ -228,7 +228,7 @@ NexaCorp-DFIR-INC-2026-002/
 │   ├── INC-2026-002_Findings_Report.pdf                  canonical 39-page deliverable
 │   └── INC-2026-002_Findings_Report.md                  same content, Markdown source
 ├── detection/
-│   ├── workflow.md                                      rationale, deployment status, mapping to findings
+│   ├── README.md                                        rationale, deployment status, mapping to findings
 │   ├── 100201-shadow-access-tuned.xml                   Wazuh tuning (deployed)
 │   ├── 100202-useradd-tuned.xml                         Wazuh tuning (deployed)
 │   ├── 100203-suid-escalation-proposed.xml              Wazuh new rule (proposed)
@@ -246,7 +246,7 @@ NexaCorp-DFIR-INC-2026-002/
 | `reports/*.md` | Same content, grep-friendly source | Anyone citing or diffing |
 | `detection/*.xml` | Wazuh-ready ruleset (XML format) | SOC / detection engineer |
 | `detection/auditd-config.conf` | Auditd watches required by rule `100205` | SOC / detection engineer |
-| `detection/workflow.md` | Per-rule rationale and deployment status | Detection engineer onboarding |
+| `detection/README.md` | Per-rule rationale and deployment status | Detection engineer onboarding |
 | `notes/journal.md` | Investigation working notebook | DFIR practitioner studying the method |
 | `.github/workflows/ci.yml` | Automated markdownlint, typography, and XML validation (`xmllint`, runs when `detection/*.xml` is present) on push | CI |
 
@@ -286,7 +286,7 @@ grep -i "useradd\|new user\|chpasswd" auth.log
 
 ### Reproduce Phase 2 live detection (Wazuh + Caldera)
 
-Requires a Wazuh manager (4.x), an agent on the target VM with auditd enabled, and a Caldera 5.x instance with the `lab2-linux-privesc` adversary profile deployed. The exact lab harness command used in this engagement is documented in [`detection/workflow.md`](detection/workflow.md).
+Requires a Wazuh manager (4.x), an agent on the target VM with auditd enabled, and a Caldera 5.x instance with the `lab2-linux-privesc` adversary profile deployed. The exact lab harness command used in this engagement is documented in [`detection/README.md`](detection/README.md).
 
 Validating the four delivered Wazuh rules :
 
