@@ -1,4 +1,4 @@
-# NexaCorp DFIR Engagement (INC-2026-002) - Privilege Escalation and Persistence
+# NexaCorp DFIR: INC-2026-002 - Privilege Escalation and Persistence
 
 Forensic investigation of a coordinated Linux post-exploitation campaign against `bru-app-01` (NexaCorp's Brussels internal application server), with Wazuh detection coverage analysis and rule tuning proposals validated by live MITRE Caldera adversary emulation. Conducted as a solo engagement during the BeCode Brussels Blue & Red Team bootcamp (Mission 02), as a direct continuation of [INC-2026-001](https://github.com/Jhatchi/NexaCorp-DFIR-INC-2026-001).
 
@@ -8,6 +8,8 @@ Forensic investigation of a coordinated Linux post-exploitation campaign against
 [![Detection](https://img.shields.io/badge/Wazuh-4%20rules%20delivered-green.svg)](detection/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Johan--Emmanuel%20Hatchi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
+
+This repository documents a SOC analyst engagement carried out as part of the BeCode Cybersecurity Bootcamp (promotion 2025-2026). It reconstructs a Linux post-exploitation campaign from host and audit-log evidence, then delivers a Wazuh detection-coverage analysis with validated rule-tuning proposals. It is the second incident in the NexaCorp DFIR series.
 
 ## Contents
 
