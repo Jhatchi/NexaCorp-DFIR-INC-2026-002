@@ -9,6 +9,26 @@ Forensic investigation of a coordinated Linux post-exploitation campaign against
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Johan--Emmanuel%20Hatchi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/johan-emmanuel-hatchi/)
 
+## Contents
+
+- [⚠ Operational notice](#-operational-notice)
+- [At a glance](#at-a-glance)
+- [Engagement context](#engagement-context)
+- [Executive summary](#executive-summary)
+- [Kill chain summary](#kill-chain-summary)
+- [How to read this report](#how-to-read-this-report)
+- [Findings summary](#findings-summary)
+- [Detection engineering](#detection-engineering)
+- [Methodology](#methodology)
+- [Tools used](#tools-used)
+- [Repository layout](#repository-layout)
+- [Reproducibility](#reproducibility)
+- [Known limits](#known-limits)
+- [NexaCorp DFIR series](#nexacorp-dfir-series)
+- [Acknowledgments](#acknowledgments)
+- [About](#about)
+- [License](#license)
+
 ## ⚠ Operational notice
 
 **This is a lab engagement against fictitious infrastructure.** NexaCorp is a fictional client used as the scenario for BeCode Brussels Mission 02. The compromised host `bru-app-01` is an isolated Debian 12 VM provisioned for the exercise, and the MITRE Caldera adversary emulation operated against it is part of the lab methodology, not a real intrusion. No real organization, network, or human was attacked.
