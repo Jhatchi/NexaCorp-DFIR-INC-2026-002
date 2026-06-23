@@ -234,6 +234,11 @@ NexaCorp-DFIR-INC-2026-002/
 │   ├── 100203-suid-escalation-proposed.xml              Wazuh new rule (proposed)
 │   ├── 100205-cron-persistence-new.xml                  Wazuh new rule (deployed)
 │   └── auditd-config.conf                               auditd watches required by 100205
+├── evidence-summary/
+│   └── ioc-summary.md                                   indicators of compromise (SIEM-ingestible)
+├── methodology/
+│   ├── attack-timeline.md                               incident timeline (CEST)
+│   └── attck-mapping.md                                 MITRE ATT&CK mapping table
 └── notes/
     └── journal.md                                       analyst investigation notebook
 ```
