@@ -11,7 +11,7 @@ Forensic investigation of a coordinated Linux post-exploitation campaign against
 
 ## Contents
 
-- [⚠ Operational notice](#-operational-notice)
+- [Operational notice](#operational-notice)
 - [At a glance](#at-a-glance)
 - [Engagement context](#engagement-context)
 - [Executive summary](#executive-summary)
@@ -29,7 +29,7 @@ Forensic investigation of a coordinated Linux post-exploitation campaign against
 - [About](#about)
 - [License](#license)
 
-## ⚠ Operational notice
+## Operational notice
 
 **This is a lab engagement against fictitious infrastructure.** NexaCorp is a fictional client used as the scenario for BeCode Brussels Mission 02. The compromised host `bru-app-01` is an isolated Debian 12 VM provisioned for the exercise, and the MITRE Caldera adversary emulation operated against it is part of the lab methodology, not a real intrusion. No real organization, network, or human was attacked.
 
